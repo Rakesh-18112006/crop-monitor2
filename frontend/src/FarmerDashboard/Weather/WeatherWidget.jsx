@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import BackgroundImages from "./BackgroundImages"; // Import BackgroundImage component
 import WeatherCard from "./WeatherCard";
+import Navbar from "../../components/Navbar";
 
 const API_URL = "http://localhost:5000/api/weather"; // Your backend API endpoint
 
@@ -38,13 +39,16 @@ const WeatherWidget = () => {
   if (error) return <p className="text-red-500 text-center mt-10 text-lg">{error}</p>;
 
   return (
+    <>
+    <Navbar />
     <div className="relative w-full h-screen flex justify-center items-center">
       {/* Background Image covering the whole screen */}
       <BackgroundImages weather={weather} />
 
       {/* Weather Info Card */}
      <WeatherCard weather={weather} ></WeatherCard>
-    </div>
+      </div>
+      </>
   );
 };
 

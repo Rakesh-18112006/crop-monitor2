@@ -85,7 +85,7 @@ const Chatbot = () => {
   return (
     <div className={`chatbot-container ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="chat-header">
-        <span>AI Assistant</span>
+        <span className="text-2xl">Kissan Bot </span>
         <button className="theme-toggle-button" onClick={toggleTheme}>
           {isDarkMode ? <FaSun /> : <FaMoon />}
         </button>

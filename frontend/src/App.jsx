@@ -21,6 +21,9 @@ import BuyerMarketplace from "./Buyer/BuyerMarketplace";
 import FarmerOrders from "./FarmerDashboard/MarketPlace/FarmerOrders";
 import BuyerOrders from "./Buyer/BuyerOrders";
 import Chat from "./components/Chat";
+import FarmerListing from "./FarmerDashboard/MarketPlace/FarmerListing";
+
+import Notfound from "./Notfound/Notfound";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -32,12 +35,15 @@ function App() {
         // Fetch user data from Firestore
         const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
         if (userDoc.exists()) {
-          setUser({ uid: firebaseUser.uid, ...userDoc.data() });
-        } else {
-          setUser(null);
+          const userData = { uid: firebaseUser.uid, ...userDoc.data() };
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData)); // Store user in localStorage
         }
       } else {
-        setUser(null);
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser)); // Get user data from localStorage if available
+        }
       }
       setLoading(false);
     });
@@ -45,7 +51,16 @@ function App() {
     return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
-  if (loading) return <p>Loading...</p>; // Show loading screen while waiting for user data
+  // Redirect to login page if not logged in
+  if (loading) return <p>Loading...</p>;
+
+  const renderRoute = (role, component) => {
+    return user?.role === role ? (
+      <ProtectedRoute>{component}</ProtectedRoute>
+    ) : (
+      <Navigate to="/login" />
+    );
+  };
 
   return (
     <AuthProvider>
@@ -57,115 +72,25 @@ function App() {
           <Route path="/login" element={<Login />} />
 
           {/* Farmer Routes */}
-          <Route
-            path="/farmer-dashboard"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <FarmerDashboard user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/marketplace"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <Marketplace user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/daily-reports"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <DailyReports />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/weather"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <WeatherWidget user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/chat"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <Chat user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/farmer-orders"
-            element={
-              user?.role === "farmer" ? (
-                <ProtectedRoute>
-                  <FarmerOrders user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
+          <Route path="/farmer-dashboard" element={renderRoute("farmer", <FarmerDashboard user={user} />)} />
+          <Route path="/marketplace" element={renderRoute("farmer", <Marketplace user={user} />)} />
+          <Route path="/daily-reports" element={renderRoute("farmer", <DailyReports />)} />
+          <Route path="/weather" element={renderRoute("farmer", <WeatherWidget user={user} />)} />
+          <Route path="/chat" element={renderRoute("farmer", <Chat user={user} />)} />
+          <Route path="/farmer-listings" element={renderRoute("farmer", <FarmerListing user={user} />)} />
+          <Route path="/farmer-orders" element={renderRoute("farmer", <FarmerOrders user={user} />)} />
 
           {/* Buyer Routes */}
-          <Route
-            path="/buyer-dashboard"
-            element={
-              user?.role === "non-farmer" ? (
-                <ProtectedRoute>
-                  <BuyerDashboard user={user} />
-                </ProtectedRoute>
-              ) : (
-                <Navigate to="/login" />
-              )
-            }
-          />
-          <Route
-            path="/buyer-marketplace"
-            element={    
-                <ProtectedRoute>
-                  <BuyerMarketplace user={user} />
-                </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/buyer-orders"
-            element={    
-                <ProtectedRoute>
-                  <BuyerOrders user={user} />
-                </ProtectedRoute>
-            }
-          />
-
+          <Route path="/buyer-dashboard" element={renderRoute("non-farmer", <BuyerDashboard user={user} />)} />
+          <Route path="/buyer-marketplace" element={<ProtectedRoute><BuyerMarketplace user={user} /></ProtectedRoute>} />
+          <Route path="/buyer-orders" element={<ProtectedRoute><BuyerOrders user={user} /></ProtectedRoute>} />
 
           {/* Common Routes */}
-          {/* This will be accessible by both farmer and buyer, if authenticated */}
           <Route path="/profile" element={<ProtectedRoute><Profile user={user} /></ProtectedRoute>} />
           <Route path="/chat/:productId/:farmerId/:buyerId" element={<ProtectedRoute><Chat user={user} /></ProtectedRoute>} />
 
+          {/* 🔹 Catch All Unmatched Routes */}
+          <Route path="*" element={<Notfound />} />
         </Routes>
       </Router>
     </AuthProvider>

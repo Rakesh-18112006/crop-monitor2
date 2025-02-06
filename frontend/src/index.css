@@ -27,3 +27,18 @@ body {
         opacity: 1;
     }
 }
+@keyframes bounce-horizontal {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(4px);
+    }
+}
+
+.animate-bounce-horizontal {
+    animation: bounce-horizontal 1s infinite;
+}

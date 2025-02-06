@@ -9,46 +9,56 @@ const FarmerDashboard = () => {
 
   return (
     <>
-      <Navbar />
-    <div className="min-h-screen bg-gray-100">
-      {/* Hero Section */}
-      <div className="text-center py-6">
-        <h1 className="text-4xl font-bold text-green-700">Welcome, Farmer!</h1>
-        <p className="text-gray-600">Manage your farm, track sales, and stay updated.</p>
+      {/* Navbar Fixed on Top (Above Background & Overlay) */}
+      <div className="relative z-20">
+        <Navbar />
       </div>
 
-      {/* Dashboard Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-6">
-        <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-white shadow-lg rounded-2xl">
-          <FaShoppingCart className="text-green-500 text-3xl mb-2" />
-          <h2 className="text-lg font-semibold">Pending Orders</h2>
-          <p>3 Orders</p>
-        </motion.div>
+      {/* Background Section with Overlay */}
+      <div className="relative min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url("morning.jpg")' }}>
+        {/* Black Shadow Overlay */}
+        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
 
-        <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-white shadow-lg rounded-2xl">
-          <FaChartLine className="text-yellow-500 text-3xl mb-2" />
-          <h2 className="text-lg font-semibold">Market Trends</h2>
-          <p>Rice +5% | Wheat -2%</p>
-        </motion.div>
-      </div>
+        {/* Hero Section */}
+        <div className="relative text-center py-16 z-20">
+          <h1 className="text-5xl font-extrabold text-yellow-500 font-sans">Welcome, Farmer!</h1>
+          <p className="text-lg text-gray-300">Manage your farm, track sales, and stay updated.</p>
+        </div>
 
-      {/* Chatbot Toggle */}
-      <div className="fixed bottom-8 right-8 cursor-pointer" onClick={() => setIsChatbotOpen(!isChatbotOpen)}>
-        <div className="bg-blue-500 p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-300">
-          <FaCommentDots className="text-white text-2xl" />
+        {/* Dashboard Cards */}
+        <div className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 pb-16 z-20">
+          {/* First Card */}
+          <motion.div whileHover={{ scale: 1.05 }} className="p-6 bg-white shadow-lg rounded-xl hover:shadow-2xl transition duration-300">
+            <FaShoppingCart className="text-green-500 text-4xl mb-4" />
+            <h2 className="text-xl font-semibold">Pending Orders</h2>
+            <p>3 Orders</p>
+          </motion.div>
+
+          {/* Second Card */}
+          <motion.div whileHover={{ scale: 1.05 }} className="p-6 bg-white shadow-lg rounded-xl hover:shadow-2xl transition duration-300">
+            <FaChartLine className="text-yellow-500 text-4xl mb-4" />
+            <h2 className="text-xl font-semibold">Market Trends</h2>
+            <p>Rice +5% | Wheat -2%</p>
+          </motion.div>
+        </div>
+
+        {/* Chatbot Toggle */}
+        <div className="fixed bottom-8 right-8 cursor-pointer z-30" onClick={() => setIsChatbotOpen(!isChatbotOpen)}>
+          <div className="bg-blue-500 p-4 rounded-full shadow-lg hover:bg-blue-600 transition duration-300">
+            <FaCommentDots className="text-white text-2xl" />
+          </div>
+        </div>
+
+        {/* Chatbot Component */}
+        <div
+          className={`fixed bottom-10 right-24 transition-all duration-500 ease-in-out ${
+            isChatbotOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          } z-30`}
+        >
+          <Chatbot />
         </div>
       </div>
-
-      {/* Chatbot Component */}
-      <div
-        className={`fixed bottom-10 right-24 transition-all duration-500 ease-in-out ${
-          isChatbotOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-        }`}
-      >
-        <Chatbot />
-      </div>
-      </div>
-      </>
+    </>
   );
 };
 

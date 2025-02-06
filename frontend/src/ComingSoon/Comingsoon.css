@@ -1,0 +1,70 @@
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Main Container */
+.coming-page {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 3rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Coming Text Styling */
+.coming-text,
+.coming-soon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Rotating Images */
+.rotating-img {
+  width: 3rem;
+  height: 3rem;
+  animation: rotate 3s linear infinite;
+}
+
+/* Keyframes for Rotation */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .coming-page {
+    font-size: 2rem;
+  }
+  .rotating-img {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .coming-page {
+    font-size: 1.5rem;
+  }
+  .rotating-img {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

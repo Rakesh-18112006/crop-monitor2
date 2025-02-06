@@ -1,43 +1,46 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Navbar from "../../components/Navbar";
 
 const mlProjects = [
   {
     id: 1,
     title: "Crop Disease Detection",
     description: "An AI model to identify crop diseases from images.",
-    image: "https://source.unsplash.com/300x200/?farm,plant",
+    image: "1.jpg",
     link: "https://crop-ram.onrender.com", // Your friend's ML project link
   },
   {
     id: 2,
-    title: "Yield Prediction",
+    title: "Crop Prediction",
     description: "Predicts crop yield based on climate and soil data.",
-    image: "https://source.unsplash.com/300x200/?agriculture,data",
-    link: "#",
+    image: "2.jpg",
+    link: "https://cropp-o2vy.onrender.com/",
   },
   {
     id: 3,
-    title: "Automated Irrigation System",
-    description: "ML-based irrigation system optimizing water usage.",
-    image: "https://source.unsplash.com/300x200/?water,farm",
-    link: "#",
+    title: "Fertizer Prediction",
+    description: "ML-based Fertilizer Prediction for farmers",
+    image: "3.jpg",
+    link: "https://fertile.onrender.com/",
   },
 ];
 
 const DailyReports = () => {
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
       {/* Heading */}
       <motion.h2 
-        className="text-2xl font-bold text-green-700 mb-6"
+        className="text-3xl font-bold text-blue-700 mb-1"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        Daily Reports - ML Projects
+        Welcome To Kissan Predictions
       </motion.h2>
-      <p className="text-gray-600 mb-8">Explore my friend's Machine Learning projects.</p>
+      <p className="text-gray-600 mb-8 ">Explore These Tools.</p>
 
       {/* Cards Container */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -57,12 +60,13 @@ const DailyReports = () => {
               rel="noopener noreferrer"
               className="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
             >
-              View Project
+              Detect Now
             </a>
           </motion.div>
         ))}
       </div>
-    </div>
+      </div>
+      </>
   );
 };
 
