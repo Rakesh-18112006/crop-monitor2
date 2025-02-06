@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* styles.css */
+body {
+    background-color: #f3f4f6;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Background image transition effect */
+.bg-cover {
+    background-size: cover;
+    background-position: center;
+    transition: background-image 1s ease-in-out;
+}
+
+/* Add animation for weather widget */
+.weather-widget {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

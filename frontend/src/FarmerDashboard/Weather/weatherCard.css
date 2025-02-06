@@ -1,0 +1,129 @@
+/* WeatherCard.css */
+
+/* Floating Animation */
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Fade-In Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Background Gradient Animation */
+@keyframes gradientBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Card Styles */
+.weather-card {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out, float 6s ease-in-out infinite;
+}
+
+/* Gradient Background for Card */
+.weather-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(173, 216, 230, 0.3), rgba(135, 206, 250, 0.3), rgba(255, 255, 255, 0.3));
+    background-size: 200% 200%;
+    border-radius: 20px;
+    z-index: -1;
+    animation: gradientBackground 10s ease infinite;
+}
+
+/* Header Styles */
+.weather-card h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Weather Detail Styles */
+.weather-detail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    padding: 12px;
+    margin: 12px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.weather-detail:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon Styles */
+.weather-detail svg {
+    font-size: 2rem;
+    margin-right: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .weather-card {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    .weather-card h2 {
+        font-size: 2rem;
+    }
+
+    .weather-detail {
+        font-size: 1rem;
+    }
+}
