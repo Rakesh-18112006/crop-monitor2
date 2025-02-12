@@ -1,32 +1,63 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Chat = require("../models/Chat");
 
+// ✅ Send a message (Create chat if not exists)
 router.post("/send", async (req, res) => {
   try {
-    const { buyerId, farmerId, productId, senderId, message } = req.body;
+    let { buyerId, farmerId, productId, senderId, message } = req.body;
 
-    let chat = await Chat.findOne({ buyerId, farmerId, productId });
+    console.log("🔹 Incoming Message:", req.body);
 
-    if (!chat) {
-      chat = new Chat({ buyerId, farmerId, productId, messages: [] });
+    // ✅ Validate request data
+    if (!buyerId || !farmerId || !productId || !senderId || !message) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    chat.messages.push({ senderId, message });
-    await chat.save();
+    // ✅ Convert IDs to ObjectId (Fix Cast Error)
+    buyerId = new mongoose.Types.ObjectId(buyerId);
+    farmerId = new mongoose.Types.ObjectId(farmerId);
+    productId = new mongoose.Types.ObjectId(productId);
+    senderId = new mongoose.Types.ObjectId(senderId);
 
-    res.json({ success: true, chat });
+    // ✅ Find chat or create a new one
+    const chat = await Chat.findOneAndUpdate(
+      { buyerId, farmerId, productId },
+      { $push: { messages: { senderId, message, timestamp: new Date() } } },
+      { new: true, upsert: true }
+    );
+
+    console.log("✅ Message saved:", chat);
+    res.status(200).json({ success: true, chat });
   } catch (error) {
-    res.status(500).json({ error: "Failed to send message" });
+    console.error("❌ Error in /send API:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-router.get("/:chatId", async (req, res) => {
+// ✅ Get chat messages for a specific conversation
+router.get("/:productId/:buyerId/:farmerId", async (req, res) => {
   try {
-    const chat = await Chat.findById(req.params.chatId);
-    res.json(chat);
+    let { productId, buyerId, farmerId } = req.params;
+
+    console.log("🔹 Fetching Chat for:", { productId, buyerId, farmerId });
+
+    // ✅ Convert IDs to ObjectId
+    buyerId = new mongoose.Types.ObjectId(buyerId);
+    farmerId = new mongoose.Types.ObjectId(farmerId);
+    productId = new mongoose.Types.ObjectId(productId);
+
+    const chat = await Chat.findOne({ productId, buyerId, farmerId });
+
+    if (!chat) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+
+    res.status(200).json(chat);
   } catch (error) {
-    res.status(500).json({ error: "Chat not found" });
+    console.error("❌ Error fetching chat:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

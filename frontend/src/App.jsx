@@ -15,14 +15,12 @@ import Marketplace from "./FarmerDashboard/MarketPlace/Marketplace";
 import WeatherWidget from "./FarmerDashboard/Weather/WeatherWidget";
 import WeatherAlert from "./FarmerDashboard/Weather/WeatherAlert";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Chatbot from "./chatbot/Chatbot";
 import BuyerDashboard from "./Buyer/BuyerDashBoard"; 
 import BuyerMarketplace from "./Buyer/BuyerMarketplace";
 import FarmerOrders from "./FarmerDashboard/MarketPlace/FarmerOrders";
 import BuyerOrders from "./Buyer/BuyerOrders";
 import Chat from "./components/Chat";
 import FarmerListing from "./FarmerDashboard/MarketPlace/FarmerListing";
-
 import Notfound from "./Notfound/Notfound";
 
 function App() {
@@ -30,9 +28,15 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Try to get user from localStorage first
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setLoading(false);
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Fetch user data from Firestore
         const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
         if (userDoc.exists()) {
           const userData = { uid: firebaseUser.uid, ...userDoc.data() };
@@ -40,56 +44,56 @@ function App() {
           localStorage.setItem("user", JSON.stringify(userData)); // Store user in localStorage
         }
       } else {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser)); // Get user data from localStorage if available
-        }
+        localStorage.removeItem("user");
+        setUser(null);
       }
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup on unmount
+    return () => unsubscribe();
   }, []);
 
-  // Redirect to login page if not logged in
-  if (loading) return <p>Loading...</p>;
+  // 🔍 Debugging: Log user state
+  console.log("User State in App:", user);
 
-  const renderRoute = (role, component) => {
-    return user?.role === role ? (
-      <ProtectedRoute>{component}</ProtectedRoute>
-    ) : (
-      <Navigate to="/login" />
-    );
-  };
+  if (loading) return <p className="text-center text-gray-500">Loading...</p>;
 
   return (
     <AuthProvider>
       <Router>
         <ToastContainer autoClose={5000} />
-        {user && !localStorage.getItem("alertTriggered") && <WeatherAlert />}
+
+        {/* ✅ Weather Alert for Farmers Only */}
+        {user?.role === "farmer" && !localStorage.getItem("alertTriggered") && <WeatherAlert />}
+
         <Routes>
-          <Route path="/" element={<Register />} />
+           <Route path="/register" element={<Register />} />
+          <Route path="/" element={user ? <Navigate to={user.role === "farmer" ? "/farmer-dashboard" : "/buyer-dashboard"} /> : <Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+  
 
-          {/* Farmer Routes */}
-          <Route path="/farmer-dashboard" element={renderRoute("farmer", <FarmerDashboard user={user} />)} />
-          <Route path="/marketplace" element={renderRoute("farmer", <Marketplace user={user} />)} />
-          <Route path="/daily-reports" element={renderRoute("farmer", <DailyReports />)} />
-          <Route path="/weather" element={renderRoute("farmer", <WeatherWidget user={user} />)} />
-          <Route path="/chat" element={renderRoute("farmer", <Chat user={user} />)} />
-          <Route path="/farmer-listings" element={renderRoute("farmer", <FarmerListing user={user} />)} />
-          <Route path="/farmer-orders" element={renderRoute("farmer", <FarmerOrders user={user} />)} />
+          {/* 🔹 Farmer Routes (Protected) */}
+          <Route path="/farmer-dashboard" element={<ProtectedRoute user={user} role="farmer"><FarmerDashboard /></ProtectedRoute>} />
+          <Route path="/marketplace" element={<ProtectedRoute user={user} role="farmer"><Marketplace user={user} /></ProtectedRoute>} />
+          <Route path="/daily-reports" element={<ProtectedRoute user={user} role="farmer"><DailyReports /></ProtectedRoute>} />
+          <Route path="/weather" element={<ProtectedRoute user={user} role="farmer"><WeatherWidget /></ProtectedRoute>} />
+          <Route path="/farmer-listings" element={<ProtectedRoute user={user} role="farmer"><FarmerListing /></ProtectedRoute>} />
+          <Route path="/farmer-orders" element={<ProtectedRoute user={user} role="farmer"><FarmerOrders user={user} /></ProtectedRoute>} />
+          <Route path="/chat/:productId/:farmerId/:buyerId" element={<ProtectedRoute user={user}><Chat /></ProtectedRoute>} />
 
-          {/* Buyer Routes */}
-          <Route path="/buyer-dashboard" element={renderRoute("non-farmer", <BuyerDashboard user={user} />)} />
-          <Route path="/buyer-marketplace" element={<ProtectedRoute><BuyerMarketplace user={user} /></ProtectedRoute>} />
-          <Route path="/buyer-orders" element={<ProtectedRoute><BuyerOrders user={user} /></ProtectedRoute>} />
 
-          {/* Common Routes */}
-          <Route path="/profile" element={<ProtectedRoute><Profile user={user} /></ProtectedRoute>} />
-          <Route path="/chat/:productId/:farmerId/:buyerId" element={<ProtectedRoute><Chat user={user} /></ProtectedRoute>} />
 
-          {/* 🔹 Catch All Unmatched Routes */}
+          {/* 🔹 Buyer Routes (Protected) */}
+          <Route path="/buyer-dashboard" element={<ProtectedRoute user={user} role="non-farmer"><BuyerDashboard user={user}  /></ProtectedRoute>} />
+          <Route path="/buyer-marketplace" element={<ProtectedRoute user={user} role="non-farmer"><BuyerMarketplace user={user} /></ProtectedRoute>} />
+          <Route path="/buyer-orders" element={<ProtectedRoute user={user} role="non-farmer"><BuyerOrders /></ProtectedRoute>} />
+
+
+          {/* 🔹 Common Routes (Protected) */}
+          <Route path="/profile" element={<ProtectedRoute user={user} ><Profile user={user}  /></ProtectedRoute>} />
+          <Route path="/chat/:productId/:farmerId/:buyerId" element={<ProtectedRoute user={user}><Chat /></ProtectedRoute>} />
+
+          {/* 🔹 404 Page */}
           <Route path="*" element={<Notfound />} />
         </Routes>
       </Router>

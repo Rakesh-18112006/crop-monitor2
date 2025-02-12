@@ -35,7 +35,7 @@ const FarmerMarketplaceNavbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/chat" className="text-white hover:text-gray-200 flex items-center">
+            <Link to="/chat/:productId/:farmerId/:buyerId" className="text-white hover:text-gray-200 flex items-center">
               <FaComments className="mr-2" />
               Chat
             </Link>

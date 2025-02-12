@@ -165,7 +165,7 @@ const Login = () => {
           <p className="mt-6 text-center text-gray-600">
             Don't have an account?{" "}
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/register")}
               className="text-green-600 hover:text-green-700 font-semibold transition-colors"
             >
               Sign up

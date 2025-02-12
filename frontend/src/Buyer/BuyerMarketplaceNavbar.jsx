@@ -9,16 +9,13 @@ const BuyerMarketplaceNavbar = () => {
         <nav>
           <ul className="flex space-x-6">
             <li>
-              <Link to="/chat" className="hover:text-green-500">Chat</Link>
-            </li>
-            <li>
               <Link to="/buyer-marketplace" className="hover:text-green-500">Market</Link>
             </li>
             <li>
               <Link to="/buyer-orders" className="hover:text-green-500">Orders</Link>
             </li>
             <li>
-              <Link to="/buyer-profile" className="hover:text-green-500">Profile</Link>
+              <Link to="/profile" className="hover:text-green-500">Profile</Link>
             </li>
             <li>
               <Link to="/buyer-dashboard" className="hover:text-green-500">Dashboard</Link>

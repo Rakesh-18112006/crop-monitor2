@@ -6,11 +6,11 @@ const chatSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
   messages: [
     {
-      senderId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
       message: { type: String, required: true },
-      timestamp: { type: Date, default: Date.now }
-    }
-  ]
+      timestamp: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Chat", chatSchema);

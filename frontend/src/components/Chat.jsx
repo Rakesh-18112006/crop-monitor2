@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import axios from "axios";
@@ -9,9 +9,11 @@ const Chat = () => {
   const { productId, farmerId, buyerId } = useParams();
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/chat/${productId}`)
+    axios
+      .get(`http://localhost:5000/api/chat/${productId}`)
       .then((res) => setMessages(res.data.messages))
       .catch((err) => console.error("Error fetching chat:", err));
 
@@ -22,8 +24,20 @@ const Chat = () => {
     return () => socket.off("receiveMessage");
   }, [productId]);
 
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const sendMessage = () => {
-    socket.emit("sendMessage", { chatId: productId, senderId: buyerId, message });
+    if (!message.trim()) return;
+
+    const newMessage = {
+      chatId: productId,
+      senderId: buyerId,
+      message,
+    };
+
+    socket.emit("sendMessage", newMessage);
 
     axios.post("http://localhost:5000/api/chat/send", {
       buyerId,
@@ -33,28 +47,50 @@ const Chat = () => {
       message,
     });
 
+    setMessages((prev) => [...prev, newMessage]);
     setMessage("");
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Chat with Seller</h2>
-      <div className="border p-4 rounded shadow">
-        {messages.map((msg, idx) => (
-          <p key={idx} className="mb-2">{msg.message}</p>
-        ))}
+    <div className="flex flex-col h-screen bg-gray-100 p-6">
+      <h2 className="text-2xl font-bold mb-4 text-center text-green-700">Chat</h2>
+
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 border rounded-lg bg-white shadow-md">
+        {messages.length === 0 ? (
+          <p className="text-center text-gray-500">No messages yet.</p>
+        ) : (
+          messages.map((msg, idx) => (
+            <div
+              key={idx}
+              className={`flex ${msg.senderId === buyerId ? "justify-end" : "justify-start"} mb-2`}
+            >
+              <div
+                className={`p-3 max-w-xs md:max-w-md rounded-lg shadow ${
+                  msg.senderId === buyerId
+                    ? "bg-green-500 text-white rounded-br-none"
+                    : "bg-gray-200 text-gray-900 rounded-bl-none"
+                }`}
+              >
+                <p>{msg.message}</p>
+              </div>
+            </div>
+          ))
+        )}
+        <div ref={chatEndRef} />
       </div>
 
-      <div className="mt-4">
-        <input 
-          className="border p-2 w-full"
+      {/* Chat Input */}
+      <div className="mt-4 flex">
+        <input
+          className="flex-1 p-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 text-white px-3 py-1 rounded mt-2"
+          className="ml-2 bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition"
         >
           Send
         </button>
