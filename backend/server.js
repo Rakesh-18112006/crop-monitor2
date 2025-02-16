@@ -10,6 +10,9 @@ const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const weatherRoutes = require("./routes/weatherRoutes");
+const { sendMessage } = require("./controllers/chatController");
+const farmerRoutes = require("./routes/farmerRoutes"); 
+
 
 // ✅ Connect to MongoDB before loading routes
 connectDB();
@@ -29,24 +32,25 @@ app.use("/api", chatbotRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/chat", chatRoutes);
-
+app.use("/api/farmers", farmerRoutes); 
 // ✅ Debug: Print All Registered Routes
 app._router.stack.forEach((middleware) => {
   if (middleware.route) {
-    console.log(`✅ Registered Route: ${Object.keys(middleware.route.methods)[0].toUpperCase()} ${middleware.route.path}`);
+    console.log(
+      `✅ Registered Route: ${Object.keys(middleware.route.methods)[0].toUpperCase()} ${middleware.route.path}`
+    );
   }
 });
 
-// ✅ Socket.io Chat System
+// ✅ Socket.io Chat System (Real-time messaging)
 io.on("connection", (socket) => {
-  console.log("🔗 New client connected");
+  console.log("🔗 New client connected:", socket.id);
 
-  socket.on("sendMessage", ({ chatId, senderId, message }) => {
-    io.emit("receiveMessage", { chatId, senderId, message });
-  });
+  // Handle sending and receiving messages
+  sendMessage(socket, io);
 
   socket.on("disconnect", () => {
-    console.log("❌ Client disconnected");
+    console.log("❌ Client disconnected:", socket.id);
   });
 });
 
@@ -58,4 +62,4 @@ app.use((req, res) => {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

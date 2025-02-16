@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const chatSchema = new mongoose.Schema({
-  buyerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  farmerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  buyerId: { type: String, required: true },  // ✅ Store Firebase UID as a string
+  farmerId: { type: String, required: true }, // ✅ Store Firebase UID as a string
+  productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true }, // ✅ Keep productId as ObjectId if stored as one
   messages: [
     {
-      senderId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+      senderId: { type: String, required: true },  // ✅ Firebase UID is a string
       message: { type: String, required: true },
       timestamp: { type: Date, default: Date.now },
     },
